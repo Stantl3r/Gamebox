@@ -31,5 +31,6 @@ if __name__ == "__main__":
             mouse_pos_y = conn.recv(1096).decode()
             print("X: " + mouse_pos_x, "Y: " + mouse_pos_y)
             conn.send("Y Position".encode())
+            pyautogui.moveTo(int(mouse_pos_x), int(mouse_pos_y))
 
         conn.close()

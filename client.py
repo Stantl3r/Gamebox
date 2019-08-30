@@ -17,18 +17,18 @@ if __name__ == "__main__":
         frame = stream(stream_machine)
 
         # Displays frame
-        cv2.namedWindow("Streaming", cv2.WND_PROP_FULLSCREEN)
-        cv2.setWindowProperty("Streaming",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
+        # cv2.namedWindow("Streaming", cv2.WND_PROP_FULLSCREEN)
+        # cv2.setWindowProperty("Streaming",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
         cv2.imshow("Streaming", frame)
         if cv2.waitKey(1) == 27:
             break
 
-        # x, y = pyautogui.position()
-        # print(str(x).rjust(4), str(y).rjust(4))
-        # stream_machine.send(str(x).rjust(4).encode())
-        # stream_machine.recv(1096)
-        # stream_machine.send(str(y).rjust(4).encode())
-        # stream_machine.recv(1096)
+        x, y = pyautogui.position()
+        print(str(x).rjust(4), str(y).rjust(4))
+        stream_machine.send(str(x).rjust(4).encode())
+        stream_machine.recv(1096)
+        stream_machine.send(str(y).rjust(4).encode())
+        stream_machine.recv(1096)
 
 
 
