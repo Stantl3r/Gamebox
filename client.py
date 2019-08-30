@@ -18,18 +18,12 @@ width, height = width.decode(), height.decode()
 print(width, height)
 
 # Streaming video
-#global_size = int(stream_machine.recv(4096).decode())
-#global_size = int(stream_machine.recv(4096))
 while True:
-    # data = b''
-    # size = global_size
-    # while size != 0:
-    #     read_size = stream_machine.recv(min(size, 40960000))
-    #     size -= len(read_size)
-    #     data += read_size
-    #     print(size)
+    # Gets size (in bytes) of screen
     size = int(stream_machine.recv(4096))
     stream_machine.send("Got size".encode())
+
+    # Retreives gaming screen
     myfile = open("screen1", 'wb')
     while size != 0:
         print(size)
@@ -39,11 +33,12 @@ while True:
     myfile.close()
     stream_machine.send("Received".encode())
     print("Received")
-    #image = Image.frombytes('RGBA', (int(width), int(height)), data)
+
+    # Displays screen on stream computer
     img = Image.open("screen1")
     image = np.array(img)
-    #frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    cv2.imshow("Video", image)
+    frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    cv2.imshow("Video", frame)
     if cv2.waitKey(1) == 27:
         break
 

@@ -26,27 +26,20 @@ while True:
     conn.send(str(height).encode())
 
     # Streaming video
-    # conn.send(str(len(image.tobytes())).encode('utf-8').strip())
-    # time.sleep(1)
-    # print(str(len(image.tobytes())).encode())
-    image.save("screen", format='PNG')
-    binary_img = open("screen", 'rb')
-    img_bytes = binary_img.read()
-    print(str(len(img_bytes)).encode())
-    conn.send(str(len(img_bytes)).encode())
-    conn.recv(4096).decode()
-
     while True:
+        # Sends screen capture to client machine
+        image.save("screen", format='PNG')
+        binary_img = open("screen", 'rb')
+        img_bytes = binary_img.read()
+        conn.send(str(len(img_bytes)).encode())
+        conn.recv(4096)
         print("Sending")
-        #conn.send(image.tobytes())
         conn.send(img_bytes)
-        if conn.recv(4096).decode() == "Received":
-            image = ImageGrab.grab()
-            print("New Image")
-            image.save("screen", format='PNG')
-            binary_img = open("screen", 'rb')
-            img_bytes = binary_img.read()
-            conn.send(str(len(img_bytes)).encode())
-            conn.recv(4096)
+
+        #Wait for receive message, then captures screen again
+        conn.recv(4096).decode()
+        image = ImageGrab.grab()
+        print("New Image")
+
 
     conn.close()
