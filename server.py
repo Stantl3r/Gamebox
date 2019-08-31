@@ -1,10 +1,10 @@
 import socket
 from PIL import ImageGrab
 from video import convert
-import pyautogui
+from pynput.mouse import Button, Controller
 
 if __name__ == "__main__":
-    port = 8081
+    port = 8080
     gaming_machine = socket.socket()
     host_name = socket.gethostbyname(socket.gethostname())
     gaming_machine.bind((host_name, port))
@@ -17,6 +17,7 @@ if __name__ == "__main__":
         conn.send("Testing connection . . .".encode())
         image = ImageGrab.grab()
 
+        mouse = Controller()
         # Streaming video
         while True:
             convert(image, gaming_machine, conn)
@@ -26,11 +27,13 @@ if __name__ == "__main__":
             image = ImageGrab.grab()
             print("New Image")
 
+            # Execute mouse controls
             mouse_pos_x = conn.recv(1096).decode()
             conn.send("X Position".encode())
             mouse_pos_y = conn.recv(1096).decode()
-            print("X: " + mouse_pos_x, "Y: " + mouse_pos_y)
             conn.send("Y Position".encode())
-            pyautogui.moveTo(int(mouse_pos_x), int(mouse_pos_y))
+            print("X: " + mouse_pos_x, "Y: " + mouse_pos_y)
+            mouse.position = (float(mouse_pos_x), float(mouse_pos_y))
+
 
         conn.close()
