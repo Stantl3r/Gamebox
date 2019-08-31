@@ -13,6 +13,8 @@ def convert(image, gaming_socket, streaming_socket):
     streaming_socket.send(img_bytes)
 
 def stream(streaming_socket):
+    width, height = get_resolution()
+
     # Gets size (in bytes) of screen
     size = int(streaming_socket.recv(4096))
     streaming_socket.send("Got size".encode())
@@ -21,7 +23,7 @@ def stream(streaming_socket):
     capture = open("stream", 'wb')
     while size != 0:
         print(size)
-        data = streaming_socket.recv(min(size, 40960000))
+        data = streaming_socket.recv(min(size, 4096000000))
         capture.write(data)
         size -= len(data)
     capture.close()
@@ -31,6 +33,7 @@ def stream(streaming_socket):
     # Displays screen on stream computer
     img = Image.open("stream")
     image = np.array(img)
+    image = cv2.resize(image, (width, height))
     return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 def get_resolution():

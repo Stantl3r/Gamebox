@@ -49,9 +49,9 @@ if __name__ == "__main__":
         x_ratio = x/width
         y_ratio = y/height
         stream_machine.send(str(x_ratio).encode())
-        stream_machine.recv(1096)
+        stream_machine.recv(4096)
         stream_machine.send(str(y_ratio).encode())
-        stream_machine.recv(1096)
+        stream_machine.recv(4096)
 
         # Send mouse clicks
 

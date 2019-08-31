@@ -30,9 +30,9 @@ if __name__ == "__main__":
             print("New Image")
 
             # Move mouse
-            mouse_pos_x = conn.recv(1096).decode()
+            mouse_pos_x = conn.recv(4096).decode()
             conn.send("X Position".encode())
-            mouse_pos_y = conn.recv(1096).decode()
+            mouse_pos_y = conn.recv(4096).decode()
             conn.send("Y Position".encode())
             print("X: " + mouse_pos_x, "Y: " + mouse_pos_y)
             try:
