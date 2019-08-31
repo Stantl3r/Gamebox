@@ -36,3 +36,19 @@ def stream(streaming_socket):
 def get_resolution():
     root = tk.Tk()
     return root.winfo_screenwidth(), root.winfo_screenheight()
+
+def send_resolution(streaming_socket):
+    width, height = get_resolution()
+    streaming_socket.send(str(width).encode())
+    streaming_socket.recv(1096)
+    streaming_socket.send(str(height).encode())
+    streaming_socket.recv(1096)
+    return width, height
+
+def calc_resolution(streaming_socket):
+    width, height = get_resolution()
+    stream_width = int(streaming_socket.recv(1096).decode())
+    streaming_socket.send("Width".encode())
+    stream_height = int(streaming_socket.recv(1096).decode())
+    streaming_socket.send("Height".encode())
+    return width, height

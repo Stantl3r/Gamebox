@@ -1,6 +1,6 @@
 import socket, pickle
 from PIL import ImageGrab
-from video import convert, get_resolution
+from video import convert, calc_resolution
 from pynput.mouse import Button, Controller
 
 if __name__ == "__main__":
@@ -18,7 +18,8 @@ if __name__ == "__main__":
         image = ImageGrab.grab()
 
         mouse = Controller()
-        width, height = get_resolution()
+
+        width, height = calc_resolution(conn)
         # Streaming video
         while True:
             convert(image, gaming_machine, conn)

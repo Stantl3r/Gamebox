@@ -1,6 +1,6 @@
 import socket, pickle
 import cv2
-from video import stream, get_resolution
+from video import stream, send_resolution
 from pynput.mouse import *
 import time
 
@@ -27,10 +27,10 @@ if __name__ == "__main__":
     print("Message received: ", data.decode())
 
     mouse = Controller()
-    listener = Listener(on_click=on_click)#, on_scroll=on_scroll)
-    listener.start()
+    #listener = Listener(on_click=on_click)#, on_scroll=on_scroll)
+    #listener.start()
 
-    width, height = get_resolution()
+    width, height = send_resolution(stream_machine)
 
     # Streaming video
     while True:
