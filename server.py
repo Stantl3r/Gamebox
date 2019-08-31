@@ -2,6 +2,7 @@ import socket, pickle
 from PIL import ImageGrab
 from video import convert, calc_resolution
 from pynput.mouse import Button, Controller
+import time
 
 if __name__ == "__main__":
     port = 8080
@@ -39,6 +40,17 @@ if __name__ == "__main__":
                 mouse.position = (float(mouse_pos_x) * width, float(mouse_pos_y) * height)
             except:
                 continue
+
+            # Click mouse
+            pickled_clicks = conn.recv(8096)
+            mouse_clicks = pickle.loads(pickled_clicks)
+            for click in mouse_clicks:
+                print("Mouse clicked")
+                mouse.position = click[0]
+                mouse.press(click[1])
+                time.sleep(click[2])
+                mouse.release(click[1])
+            conn.send("Mouse clicks".encode())
 
 
         conn.close()

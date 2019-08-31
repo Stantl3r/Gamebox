@@ -4,12 +4,12 @@ from video import stream, send_resolution
 from pynput.mouse import *
 import time
 
-CLICKS = []
+global START, END
 MOUSE_SCROLL = None
-START = 0
-END = 0
 
 def on_click(x, y, button, pressed):
+    global START
+    global END
     if pressed:
         START = time.time()
     else:
@@ -25,10 +25,11 @@ if __name__ == "__main__":
     stream_machine.connect(('192.168.0.46', port))
     data = stream_machine.recv(4096)
     print("Message received: ", data.decode())
+    CLICKS = []
 
     mouse = Controller()
-    #listener = Listener(on_click=on_click)#, on_scroll=on_scroll)
-    #listener.start()
+    listener = Listener(on_click=on_click)#, on_scroll=on_scroll)
+    listener.start()
 
     width, height = send_resolution(stream_machine)
 
@@ -54,6 +55,11 @@ if __name__ == "__main__":
         stream_machine.recv(4096)
 
         # Send mouse clicks
+        stream_clicks = pickle.dumps(CLICKS)
+        stream_machine.send(stream_clicks)
+        stream_machine.recv(4096)
+        CLICKS.clear()
+
 
 
 
