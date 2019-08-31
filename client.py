@@ -1,15 +1,22 @@
-import socket
+import socket, pickle
 import cv2
-from video import stream
+from video import stream, get_resolution
 from pynput.mouse import *
+import time
 
-NUMBER_OF_CLICKS = 0
-MOUSE_CLICK = False
+CLICKS = []
 MOUSE_SCROLL = None
+START = 0
+END = 0
 
 def on_click(x, y, button, pressed):
-    MOUSE_CLICK = True
-    NUMBER_OF_CLICKS += 1
+    if pressed:
+        START = time.time()
+    else:
+        END = time.time()
+        press_time = END - START
+        CLICKS.append(((x,y), button, press_time))
+
 
 if __name__ == "__main__":
     stream_machine = socket.socket()
@@ -20,8 +27,10 @@ if __name__ == "__main__":
     print("Message received: ", data.decode())
 
     mouse = Controller()
-    #listener = Listener(on_click=on_click, on_scroll=on_scroll)
-    #listener.start()
+    listener = Listener(on_click=on_click)#, on_scroll=on_scroll)
+    listener.start()
+
+    width, height = get_resolution()
 
     # Streaming video
     while True:
@@ -35,12 +44,19 @@ if __name__ == "__main__":
         if cv2.waitKey(1) == 27:
             break
 
-        # Send mouse controls
+        # Send mouse position
         x, y = mouse.position
-        stream_machine.send(str(x).encode())
+        x_ratio = x/width
+        y_ratio = y/height
+        stream_machine.send(str(x_ratio).encode())
         stream_machine.recv(1096)
-        stream_machine.send(str(y).encode())
+        stream_machine.send(str(y_ratio).encode())
         stream_machine.recv(1096)
+
+        # Send mouse clicks
+
+
+
 
     cv2.destroyAllWindows()
     stream_machine.close()

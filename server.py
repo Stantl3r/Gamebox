@@ -1,6 +1,6 @@
-import socket
+import socket, pickle
 from PIL import ImageGrab
-from video import convert
+from video import convert, get_resolution
 from pynput.mouse import Button, Controller
 
 if __name__ == "__main__":
@@ -18,6 +18,7 @@ if __name__ == "__main__":
         image = ImageGrab.grab()
 
         mouse = Controller()
+        width, height = get_resolution()
         # Streaming video
         while True:
             convert(image, gaming_machine, conn)
@@ -27,13 +28,16 @@ if __name__ == "__main__":
             image = ImageGrab.grab()
             print("New Image")
 
-            # Execute mouse controls
+            # Move mouse
             mouse_pos_x = conn.recv(1096).decode()
             conn.send("X Position".encode())
             mouse_pos_y = conn.recv(1096).decode()
             conn.send("Y Position".encode())
             print("X: " + mouse_pos_x, "Y: " + mouse_pos_y)
-            mouse.position = (float(mouse_pos_x), float(mouse_pos_y))
+            try:
+                mouse.position = (float(mouse_pos_x) * width, float(mouse_pos_y) * height)
+            except:
+                continue
 
 
         conn.close()

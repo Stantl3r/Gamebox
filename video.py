@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from PIL import Image
+import tkinter as tk
 
 def convert(image, gaming_socket, streaming_socket):
     image.save("screen", format='PNG')
@@ -31,3 +32,7 @@ def stream(streaming_socket):
     img = Image.open("stream")
     image = np.array(img)
     return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+def get_resolution():
+    root = tk.Tk()
+    return root.winfo_screenwidth(), root.winfo_screenheight()
