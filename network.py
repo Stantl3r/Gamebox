@@ -3,6 +3,22 @@ from server import streaming
 from client import gaming
 from threading import Thread
 
+
+
+def gaming_server(server_sock):
+    while True:
+        conn, addr = server_sock.accept()
+        json_type = conn.recv(4096)
+        machine_type = json.loads(json_type.decode())
+        if "stream" in machine_type:
+            streaming_machines.append(machine_type["stream"])
+            conn.send("All machines on network: {}".format(gaming_machines + streaming_machines).encode())
+        else:
+            gaming_machines.append(machine_type["game"])
+            conn.send("Available machines to connect to: {}".format(streaming_machines).encode())
+
+
+
 if __name__ == "__main__":
     # Machines used to play games that are being streamed
     gaming_machines = []
@@ -52,8 +68,9 @@ if __name__ == "__main__":
                 streaming_machines.append(machine_type["stream"])
                 conn.send("All machines on network: {}".format(gaming_machines + streaming_machines).encode())
                 if waiting is True:
-                    process = Thread(target=gaming, args=(machine_type["stream"],))
+                    process = Thread(target=gaming_server, args=(server_sock,))
                     process.start()
+                    gaming(machine_type["stream"])
             else:
                 gaming_machines.append(machine_type["game"])
                 conn.send("Available machines to connect to: {}".format(streaming_machines).encode())
