@@ -7,7 +7,8 @@ from pynput.keyboard import Controller as KeyController
 from mouse import move_mouse, click_mouse
 from keyboard import press_keys
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+def streaming():
     port = 5000
     stream_machine = socket.socket()
     host_name = socket.gethostbyname(socket.gethostname())
