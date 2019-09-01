@@ -1,6 +1,6 @@
-import socket, pickle, json
+import socket, json
 import cv2
-from video import stream, send_resolution
+from video import stream, send_resolution, get_resolution
 from pynput.mouse import *
 import time
 
@@ -16,16 +16,16 @@ def on_click(x, y, button, pressed):
         END = time.time()
         press_time = END - START
         if button == Button.left:
-            CLICKS.append(((x,y), "left", press_time))
+            CLICKS.append(("left", press_time))
         else:
-            CLICKS.append(((x,y), "right", press_time))
+            CLICKS.append(("right", press_time))
 
 
 if __name__ == "__main__":
     stream_machine = socket.socket()
     host_name = socket.gethostbyname(socket.gethostname())
     port = 8080
-    stream_machine.connect(('192.168.0.46', port))
+    stream_machine.connect(('192.168.0.68', port))
     data = stream_machine.recv(4096)
     print("Message received: ", data.decode())
     CLICKS = []

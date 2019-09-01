@@ -1,4 +1,4 @@
-import socket, pickle, json
+import socket, json
 from PIL import ImageGrab
 from video import convert, calc_resolution
 from pynput.mouse import Button, Controller
@@ -47,14 +47,13 @@ if __name__ == "__main__":
             mouse_clicks = json_clicks.get("0")
             for click in mouse_clicks:
                 print("Mouse clicked")
-                mouse.position = click[0]
-                if click[1] == "left":
+                if click[0] == "left":
                     mouse.press(Button.left)
-                    time.sleep(click[2])
+                    time.sleep(click[1])
                     mouse.release(Button.left)
                 else:
                     mouse.press(Button.right)
-                    time.sleep(click[2])
+                    time.sleep(click[1])
                     mouse.release(Button.right)
             conn.send("Mouse clicks".encode())
 
