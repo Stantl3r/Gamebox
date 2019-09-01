@@ -12,6 +12,7 @@ if __name__ == "__main__":
 
     server_sock = None
     node = None
+    waiting = False
     machine = input("Will this device be used to stream local games or play games? ")
     server = input("Is there a server already running? ")
 
@@ -34,6 +35,7 @@ if __name__ == "__main__":
         node.connect((ip, 5002))
         print("Connected to: " + ip)
 
+    # If this machine is running the server
     if server_sock is not None:
         if "stream" in machine:
             print("Waiting for machine to connect . . .")
@@ -41,6 +43,7 @@ if __name__ == "__main__":
             process.start()
         else:
             print("Waiting for an available machine . . .")
+            waiting = True
         while True:
             conn, addr = server_sock.accept()
             json_type = conn.recv(4096)
@@ -48,9 +51,13 @@ if __name__ == "__main__":
             if "stream" in machine_type:
                 streaming_machines.append(machine_type["stream"])
                 conn.send("All machines on network: {}".format(gaming_machines + streaming_machines).encode())
+                if waiting is True:
+                    process = Thread(target=gaming, args=(machine_type["stream"],))
+                    process.start()
             else:
                 gaming_machines.append(machine_type["game"])
                 conn.send("Available machines to connect to: {}".format(streaming_machines).encode())
+    # Else the machine is not running the server
     else:
         if "stream" in machine:
             node.send(json.dumps({"stream": host_name}).encode())
