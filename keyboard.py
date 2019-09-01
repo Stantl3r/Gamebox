@@ -1,12 +1,12 @@
 import json, time
 from pynput.keyboard import Key
 
-def send_keyboard_input(streaming_socket, KEYPRESS):
+def send_keyboard_input(gaming_socket, KEYPRESS):
     keyboard_input = json.dumps({"Keyboard": KEYPRESS})
-    streaming_socket.send(keyboard_input.encode())
-    streaming_socket.recv(1096)
+    gaming_socket.send(keyboard_input.encode())
+    gaming_socket.recv(1096)
 
-def press_keys(streaming_socket, keyboard):
+def press_keys(gaming_socket, keyboard):
         special_keys = {"backspace": Key.backspace,
                         "shift": Key.shift, 
                         "tab": Key.tab, 
@@ -16,7 +16,7 @@ def press_keys(streaming_socket, keyboard):
                         "cmd": Key.cmd,
                         "alt": Key.alt
         }
-        json_keyboard = json.loads(streaming_socket.recv(8096).decode())
+        json_keyboard = json.loads(gaming_socket.recv(8096).decode())
         keyboard_input = json_keyboard.get("Keyboard")
         for key in keyboard_input:
             print("Key Pressed")
@@ -35,4 +35,4 @@ def press_keys(streaming_socket, keyboard):
                     keyboard.release(special_keys[check_key])
                 else:
                     continue
-        streaming_socket.send("Keyboard input".encode())
+        gaming_socket.send("Keyboard input".encode())

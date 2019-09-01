@@ -35,11 +35,11 @@ def on_release(key):
 
 
 if __name__ == "__main__":
-    port = 8080
-    stream_machine = socket.socket()
+    port = 5000
+    game_machine = socket.socket()
     host_name = socket.gethostbyname(socket.gethostname())
-    stream_machine.connect(('192.168.0.46', port))
-    data = stream_machine.recv(4096)
+    game_machine.connect(('192.168.0.46', port))
+    data = game_machine.recv(4096)
     print("Message received: ", data.decode())
 
     CURRENT_CLICK = []
@@ -54,12 +54,12 @@ if __name__ == "__main__":
     keyboard_listener = KeyListener(on_press=on_press, on_release=on_release)
     keyboard_listener.start()
 
-    width, height = send_resolution(stream_machine)
+    width, height = send_resolution(game_machine)
 
     # Streaming video
     while True:
         # Retrieves frame
-        frame = stream(stream_machine)
+        frame = stream(game_machine)
 
         # Displays frame
         cv2.namedWindow("Streaming", cv2.WND_PROP_FULLSCREEN)
@@ -67,21 +67,21 @@ if __name__ == "__main__":
         cv2.imshow("Streaming", frame)
         if cv2.waitKey(1) == 27:
             break
-        stream_machine.send("Received".encode())
+        game_machine.send("Received".encode())
         print("Received")
 
         # Send mouse position
-        send_mouse_pos(stream_machine, mouse, width, height)
+        send_mouse_pos(game_machine, mouse, width, height)
 
         # Send mouse clicks
-        send_mouse_clicks(stream_machine, CLICKS)
+        send_mouse_clicks(game_machine, CLICKS)
         CLICKS.clear()
 
         # Send keyboard input
-        send_keyboard_input(stream_machine, KEYPRESS)
+        send_keyboard_input(game_machine, KEYPRESS)
         KEYPRESS.clear()
         CURRENT_KEY.clear()
 
     mouse_listener.stop()
     cv2.destroyAllWindows()
-    stream_machine.close()
+    game_machine.close()
