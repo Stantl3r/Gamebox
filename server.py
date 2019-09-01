@@ -5,6 +5,7 @@ from pynput.mouse import Controller as MouseController
 from pynput.keyboard import Key
 from pynput.keyboard import Controller as KeyController
 from mouse import move_mouse, click_mouse
+from keyboard import press_keys
 
 if __name__ == "__main__":
     port = 8080
@@ -22,15 +23,6 @@ if __name__ == "__main__":
 
         mouse = MouseController()
         keyboard = KeyController()
-        special_keys = {"backspace": Key.backspace,
-                        "shift": Key.shift, 
-                        "tab": Key.tab, 
-                        "space": Key.space,
-                        "enter": Key.enter,
-                        "ctrl": Key.ctrl,
-                        "cmd": Key.cmd,
-                        "alt": Key.alt
-        }
 
         width, height = calc_resolution(conn)
         # Streaming video
@@ -49,27 +41,6 @@ if __name__ == "__main__":
             click_mouse(conn, mouse)
 
             # Keyboard
-            json_keyboard = json.loads(conn.recv(8096).decode())
-            keyboard_input = json_keyboard.get("Keyboard")
-            for key in keyboard_input:
-                print("Key Pressed")
-                if len(key[0]) < 4:
-                    real_key = key[0].split('\'')[1]
-                    print(real_key)
-                    keyboard.press(real_key)
-                    time.sleep(key[1])
-                    keyboard.release(real_key)
-                else:
-                    print("Special key")
-                    check_key = key[0].split('.')[1]
-                    if check_key in special_keys:
-                        keyboard.press(special_keys[check_key])
-                        time.sleep(key[1])
-                        keyboard.release(special_keys[check_key])
-                    else:
-                        continue
-            conn.send("Keyboard input".encode())
-
-
+            press_keys(conn, keyboard)
 
         conn.close()

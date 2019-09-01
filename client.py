@@ -8,6 +8,7 @@ from pynput.keyboard import Controller as KeyController
 from pynput.keyboard import Listener as KeyListener
 from mouse import send_mouse_pos, send_mouse_clicks
 from video import stream, send_resolution
+from keyboard import send_keyboard_input
 
 
 def on_click(x, y, button, pressed):
@@ -37,7 +38,7 @@ if __name__ == "__main__":
     port = 8080
     stream_machine = socket.socket()
     host_name = socket.gethostbyname(socket.gethostname())
-    stream_machine.connect(('192.168.0.68', port))
+    stream_machine.connect(('192.168.0.46', port))
     data = stream_machine.recv(4096)
     print("Message received: ", data.decode())
 
@@ -77,9 +78,7 @@ if __name__ == "__main__":
         CLICKS.clear()
 
         # Send keyboard input
-        keyboard_input = json.dumps({"Keyboard": KEYPRESS})
-        stream_machine.send(keyboard_input.encode())
-        stream_machine.recv(1096)
+        send_keyboard_input(stream_machine, KEYPRESS)
         KEYPRESS.clear()
         CURRENT_KEY.clear()
 
