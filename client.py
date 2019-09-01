@@ -26,8 +26,11 @@ def on_press(key):
 
 
 def on_release(key):
-    KEYPRESS.append((str(key), time.time() - CURRENT_KEY[str(key)]))
-    CURRENT_KEY.pop(str(key))
+    try:
+        KEYPRESS.append((str(key), time.time() - CURRENT_KEY[str(key)]))
+        CURRENT_KEY.pop(str(key))
+    except:
+        None
 
 
 if __name__ == "__main__":
