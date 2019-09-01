@@ -22,8 +22,8 @@ def stream(streaming_socket):
     # Retreives captures of screen from connected computer
     capture = open("stream", 'wb')
     while size != 0:
-        print(size)
-        data = streaming_socket.recv(min(size, 10000))
+        print(size, min(size, 1048576))
+        data = streaming_socket.recv(min(size, 1048576))
         capture.write(data)
         size -= len(data)
     capture.close()

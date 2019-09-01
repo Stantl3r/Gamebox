@@ -37,7 +37,7 @@ if __name__ == "__main__":
     port = 8080
     stream_machine = socket.socket()
     host_name = socket.gethostbyname(socket.gethostname())
-    stream_machine.connect(('192.168.0.46', port))
+    stream_machine.connect(('192.168.0.68', port))
     data = stream_machine.recv(4096)
     print("Message received: ", data.decode())
 
