@@ -3,37 +3,52 @@ import cv2
 from pynput.mouse import Button
 from pynput.mouse import Controller as MouseController
 from pynput.mouse import Listener as MouseListener
+from pynput.keyboard import Key
+from pynput.keyboard import Controller as KeyController
+from pynput.keyboard import Listener as KeyListener
 from mouse import send_mouse_pos, send_mouse_clicks
 from video import stream, send_resolution
 
-global START, END
 
 def on_click(x, y, button, pressed):
-    global START
-    global END
     if pressed:
-        START = time.time()
+        CURRENT_CLICK.append(time.time())
     else:
-        END = time.time()
-        press_time = END - START
         if button == Button.left:
-            CLICKS.append(("left", press_time))
+            CLICKS.append(("left", time.time() - CURRENT_CLICK[0]))
         else:
-            CLICKS.append(("right", press_time))
+            CLICKS.append(("right", time.time() - CURRENT_CLICK[0]))
+        CURRENT_CLICK.clear()
+
+
+def on_press(key):
+    CURRENT_KEY[str(key)] = time.time()
+
+
+def on_release(key):
+    KEYPRESS.append((str(key), time.time() - CURRENT_KEY[str(key)]))
+    CURRENT_KEY.pop(str(key))
 
 
 if __name__ == "__main__":
+    port = 8080
     stream_machine = socket.socket()
     host_name = socket.gethostbyname(socket.gethostname())
-    port = 8080
-    stream_machine.connect(('192.168.0.68', port))
+    stream_machine.connect(('192.168.0.46', port))
     data = stream_machine.recv(4096)
     print("Message received: ", data.decode())
-    CLICKS = []
 
+    CURRENT_CLICK = []
+    CLICKS = []
     mouse = MouseController()
     mouse_listener = MouseListener(on_click=on_click)
     mouse_listener.start()
+
+    CURRENT_KEY = {}
+    KEYPRESS = []
+    keyboard = KeyController()
+    keyboard_listener = KeyListener(on_press=on_press, on_release=on_release)
+    keyboard_listener.start()
 
     width, height = send_resolution(stream_machine)
 
@@ -57,6 +72,13 @@ if __name__ == "__main__":
         # Send mouse clicks
         send_mouse_clicks(stream_machine, CLICKS)
         CLICKS.clear()
+
+        # Send keyboard input
+        keyboard_input = json.dumps({"Keyboard": KEYPRESS})
+        stream_machine.send(keyboard_input.encode())
+        stream_machine.recv(1096)
+        KEYPRESS.clear()
+        CURRENT_KEY.clear()
 
     mouse_listener.stop()
     cv2.destroyAllWindows()

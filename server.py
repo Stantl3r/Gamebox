@@ -2,6 +2,7 @@ import socket, json, time
 from PIL import ImageGrab
 from video import convert, calc_resolution
 from pynput.mouse import Controller as MouseController
+from pynput.keyboard import Controller as KeyController
 from mouse import move_mouse, click_mouse
 
 if __name__ == "__main__":
@@ -19,6 +20,7 @@ if __name__ == "__main__":
         image = ImageGrab.grab()
 
         mouse = MouseController()
+        keyboard = KeyController()
 
         width, height = calc_resolution(conn)
         # Streaming video
@@ -35,6 +37,19 @@ if __name__ == "__main__":
 
             # Click mouse
             click_mouse(conn, mouse)
+
+            # Keyboard
+            json_keyboard = json.loads(conn.recv(8096).decode())
+            keyboard_input = json_keyboard.get("Keyboard")
+            for key in keyboard_input:
+                print("Key Pressed")
+                real_key = key[0].split('\'')[1]
+                print(real_key)
+                keyboard.press(real_key)
+                time.sleep(key[1])
+                keyboard.release(real_key)
+            conn.send("Keyboard input".encode())
+
 
 
         conn.close()
