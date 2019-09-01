@@ -1,4 +1,4 @@
-import socket, pickle
+import socket, pickle, json
 import cv2
 from video import stream, send_resolution
 from pynput.mouse import *
@@ -15,7 +15,10 @@ def on_click(x, y, button, pressed):
     else:
         END = time.time()
         press_time = END - START
-        CLICKS.append(((x,y), button, press_time))
+        if button == Button.left:
+            CLICKS.append(((x,y), "left", press_time))
+        else:
+            CLICKS.append(((x,y), "right", press_time))
 
 
 if __name__ == "__main__":
@@ -44,20 +47,22 @@ if __name__ == "__main__":
         cv2.imshow("Streaming", frame)
         if cv2.waitKey(1) == 27:
             break
+        stream_machine.send("Received".encode())
+        print("Received")
 
         # Send mouse position
         x, y = mouse.position
         x_ratio = x/width
         y_ratio = y/height
         stream_machine.send(str(x_ratio).encode())
-        stream_machine.recv(4096)
+        stream_machine.recv(1096)
         stream_machine.send(str(y_ratio).encode())
-        stream_machine.recv(4096)
+        stream_machine.recv(1096)
 
         # Send mouse clicks
-        stream_clicks = pickle.dumps(CLICKS)
-        stream_machine.send(stream_clicks)
-        stream_machine.recv(4096)
+        stream_clicks = json.dumps({"0": CLICKS})
+        stream_machine.send(stream_clicks.encode())
+        stream_machine.recv(1096)
         CLICKS.clear()
 
 

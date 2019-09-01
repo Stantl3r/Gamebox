@@ -27,8 +27,8 @@ def stream(streaming_socket):
         capture.write(data)
         size -= len(data)
     capture.close()
-    streaming_socket.send("Received".encode())
-    print("Received")
+    # streaming_socket.send("Received".encode())
+    # print("Received")
 
     # Displays screen on stream computer
     img = Image.open("stream")

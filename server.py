@@ -1,4 +1,4 @@
-import socket, pickle
+import socket, pickle, json
 from PIL import ImageGrab
 from video import convert, calc_resolution
 from pynput.mouse import Button, Controller
@@ -26,7 +26,7 @@ if __name__ == "__main__":
             convert(image, gaming_machine, conn)
 
             #Wait for receive message, then captures screen again
-            conn.recv(4096).decode()
+            conn.recv(1096).decode()
             image = ImageGrab.grab()
             print("New Image")
 
@@ -43,13 +43,19 @@ if __name__ == "__main__":
 
             # Click mouse
             pickled_clicks = conn.recv(8096)
-            mouse_clicks = pickle.loads(pickled_clicks)
+            json_clicks = json.loads(pickled_clicks.decode())
+            mouse_clicks = json_clicks.get("0")
             for click in mouse_clicks:
                 print("Mouse clicked")
                 mouse.position = click[0]
-                mouse.press(click[1])
-                time.sleep(click[2])
-                mouse.release(click[1])
+                if click[1] == "left":
+                    mouse.press(Button.left)
+                    time.sleep(click[2])
+                    mouse.release(Button.left)
+                else:
+                    mouse.press(Button.right)
+                    time.sleep(click[2])
+                    mouse.release(Button.right)
             conn.send("Mouse clicks".encode())
 
 
