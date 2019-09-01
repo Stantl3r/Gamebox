@@ -4,7 +4,7 @@ from PIL import Image
 import tkinter as tk
 
 def convert(image, gaming_socket, streaming_socket):
-    image.save("screen", format='PNG')
+    image.save("screen", format='PNG', optimize=True, quality=85)
     binary_img = open("screen", 'rb')
     img_bytes = binary_img.read()
     streaming_socket.send(str(len(img_bytes)).encode())
@@ -23,7 +23,7 @@ def stream(streaming_socket):
     capture = open("stream", 'wb')
     while size != 0:
         print(size)
-        data = streaming_socket.recv(min(size, 4096000000))
+        data = streaming_socket.recv(min(size, 10000))
         capture.write(data)
         size -= len(data)
     capture.close()
