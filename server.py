@@ -1,7 +1,7 @@
 import socket, json, time
 from PIL import ImageGrab
 from video import convert, calc_resolution
-from pynput.mouse import Button, Controller
+from pynput.mouse import Controller as MouseController
 from mouse import move_mouse, click_mouse
 
 if __name__ == "__main__":
@@ -18,7 +18,7 @@ if __name__ == "__main__":
         conn.send("Testing connection . . .".encode())
         image = ImageGrab.grab()
 
-        mouse = Controller()
+        mouse = MouseController()
 
         width, height = calc_resolution(conn)
         # Streaming video

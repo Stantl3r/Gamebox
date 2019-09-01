@@ -1,8 +1,10 @@
 import socket, json, time
 import cv2
-from video import stream, send_resolution
-from pynput.mouse import *
+from pynput.mouse import Button
+from pynput.mouse import Controller as MouseController
+from pynput.mouse import Listener as MouseListener
 from mouse import send_mouse_pos, send_mouse_clicks
+from video import stream, send_resolution
 
 global START, END
 
@@ -29,8 +31,8 @@ if __name__ == "__main__":
     print("Message received: ", data.decode())
     CLICKS = []
 
-    mouse = Controller()
-    mouse_listener = Listener(on_click=on_click)
+    mouse = MouseController()
+    mouse_listener = MouseListener(on_click=on_click)
     mouse_listener.start()
 
     width, height = send_resolution(stream_machine)
