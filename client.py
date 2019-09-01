@@ -1,11 +1,10 @@
-import socket, json
+import socket, json, time
 import cv2
-from video import stream, send_resolution, get_resolution
+from video import stream, send_resolution
 from pynput.mouse import *
-import time
+from mouse import send_mouse_pos, send_mouse_clicks
 
 global START, END
-MOUSE_SCROLL = None
 
 def on_click(x, y, button, pressed):
     global START
@@ -31,8 +30,8 @@ if __name__ == "__main__":
     CLICKS = []
 
     mouse = Controller()
-    listener = Listener(on_click=on_click)#, on_scroll=on_scroll)
-    listener.start()
+    mouse_listener = Listener(on_click=on_click)
+    mouse_listener.start()
 
     width, height = send_resolution(stream_machine)
 
@@ -51,23 +50,12 @@ if __name__ == "__main__":
         print("Received")
 
         # Send mouse position
-        x, y = mouse.position
-        x_ratio = x/width
-        y_ratio = y/height
-        stream_machine.send(str(x_ratio).encode())
-        stream_machine.recv(1096)
-        stream_machine.send(str(y_ratio).encode())
-        stream_machine.recv(1096)
+        send_mouse_pos(stream_machine, mouse, width, height)
 
         # Send mouse clicks
-        stream_clicks = json.dumps({"0": CLICKS})
-        stream_machine.send(stream_clicks.encode())
-        stream_machine.recv(1096)
+        send_mouse_clicks(stream_machine, CLICKS)
         CLICKS.clear()
 
-
-
-
-
+    mouse_listener.stop()
     cv2.destroyAllWindows()
     stream_machine.close()

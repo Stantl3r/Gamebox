@@ -1,8 +1,8 @@
-import socket, json
+import socket, json, time
 from PIL import ImageGrab
 from video import convert, calc_resolution
 from pynput.mouse import Button, Controller
-import time
+from mouse import move_mouse, click_mouse
 
 if __name__ == "__main__":
     port = 8080
@@ -31,31 +31,10 @@ if __name__ == "__main__":
             print("New Image")
 
             # Move mouse
-            mouse_pos_x = conn.recv(4096).decode()
-            conn.send("X Position".encode())
-            mouse_pos_y = conn.recv(4096).decode()
-            conn.send("Y Position".encode())
-            print("X: " + mouse_pos_x, "Y: " + mouse_pos_y)
-            try:
-                mouse.position = (float(mouse_pos_x) * width, float(mouse_pos_y) * height)
-            except:
-                continue
+            move_mouse(conn, mouse, width, height)
 
             # Click mouse
-            pickled_clicks = conn.recv(8096)
-            json_clicks = json.loads(pickled_clicks.decode())
-            mouse_clicks = json_clicks.get("0")
-            for click in mouse_clicks:
-                print("Mouse clicked")
-                if click[0] == "left":
-                    mouse.press(Button.left)
-                    time.sleep(click[1])
-                    mouse.release(Button.left)
-                else:
-                    mouse.press(Button.right)
-                    time.sleep(click[1])
-                    mouse.release(Button.right)
-            conn.send("Mouse clicks".encode())
+            click_mouse(conn, mouse)
 
 
         conn.close()
