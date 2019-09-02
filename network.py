@@ -4,6 +4,17 @@ from client import gaming
 from threading import Thread
 
 
+def create_server():
+    server_sock = socket.socket()
+    host_name = socket.gethostbyname(socket.gethostname())
+    if "stream" in machine:
+        streaming_machines.append(host_name)
+    else:
+        gaming_machines.append(host_name)
+    server_sock.bind((host_name, 5001))
+    return server_sock, host_name
+
+
 
 def gaming_server(server_sock):
     while True:
@@ -34,13 +45,7 @@ if __name__ == "__main__":
 
     # Initialize server if there is not one currently
     if "no" in server or "No" in server:
-        server_sock = socket.socket()
-        host_name = socket.gethostbyname(socket.gethostname())
-        if "stream" in machine:
-            streaming_machines.append(host_name)
-        else:
-            gaming_machines.append(host_name)
-        server_sock.bind((host_name, 5002))
+        server_sock, host_name = create_server()
         server_sock.listen()
         print("New Server: " + host_name)
     # Else enter IP of server and connect to it
@@ -48,8 +53,24 @@ if __name__ == "__main__":
         ip = input("Please enter in the server IP: ")
         node = socket.socket()
         host_name = socket.gethostbyname(socket.gethostname())
-        node.connect((ip, 5002))
-        print("Connected to: " + ip)
+        node.settimeout(5)
+        while True:
+            try:
+                node.connect((ip, 5001))
+                print("Connected to: " + ip)
+                break
+            except socket.timeout:
+                response = input("No server detected. Enter a different IP? (y/n) ")
+                if response == "y":
+                    ip = input("IP Address: ")
+                    continue
+                else:
+                    print("Initializing this machine as the server.")
+                    server_sock, host_name = create_server()
+                    server_sock.listen()
+                    print("New Server: " + host_name)
+                    node = None
+                    break
 
     # If this machine is running the server
     if server_sock is not None:
