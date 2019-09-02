@@ -37,24 +37,17 @@ def on_release(key):
     except:
         None
 
-#if __name__ == "__main__":
 def gaming(ip):
     port = 5000
     game_machine = socket.socket()
-    #host_name = socket.gethostbyname(socket.gethostname())
     game_machine.connect((ip, port))
-    #game_machine.connect(('192.168.0.46', port))
     data = game_machine.recv(4096)
     print("Message received: ", data.decode())
 
-    # CURRENT_CLICK = []
-    # CLICKS = []
     mouse = MouseController()
     mouse_listener = MouseListener(on_click=on_click)
     mouse_listener.start()
 
-    # CURRENT_KEY = {}
-    # KEYPRESS = []
     keyboard = KeyController()
     keyboard_listener = KeyListener(on_press=on_press, on_release=on_release)
     keyboard_listener.start()
@@ -87,6 +80,7 @@ def gaming(ip):
         KEYPRESS.clear()
         CURRENT_KEY.clear()
 
+    keyboard_listener.stop()
     mouse_listener.stop()
     cv2.destroyAllWindows()
     game_machine.close()
